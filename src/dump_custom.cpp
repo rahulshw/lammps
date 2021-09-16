@@ -1418,23 +1418,23 @@ int DumpCustom::parse_fields(int narg, char **arg)
     } else if (strcmp(arg[iarg],"bmux") == 0) {
       if (!atom->bmu_flag)
         error->all(FLERR,"Dumping an atom property that isn't allocated");
-      pack_choice[i] = &DumpCustom::pack_bmux;
-      vtype[i] = DOUBLE;
+      pack_choice[iarg] = &DumpCustom::pack_bmux;
+      vtype[iarg] = DOUBLE;
     } else if (strcmp(arg[iarg],"bmuy") == 0) {
       if (!atom->bmu_flag)
         error->all(FLERR,"Dumping an atom property that isn't allocated");
-      pack_choice[i] = &DumpCustom::pack_bmuy;
-      vtype[i] = DOUBLE;
+      pack_choice[iarg] = &DumpCustom::pack_bmuy;
+      vtype[iarg] = DOUBLE;
     } else if (strcmp(arg[iarg],"bmuz") == 0) {
       if (!atom->bmu_flag)
         error->all(FLERR,"Dumping an atom property that isn't allocated");
-      pack_choice[i] = &DumpCustom::pack_bmuz;
-      vtype[i] = DOUBLE;
+      pack_choice[iarg] = &DumpCustom::pack_bmuz;
+      vtype[iarg] = DOUBLE;
     } else if (strcmp(arg[iarg],"bmu") == 0) {
       if (!atom->bmu_flag)
         error->all(FLERR,"Dumping an atom property that isn't allocated");
-      pack_choice[i] = &DumpCustom::pack_bmu;
-      vtype[i] = DOUBLE;
+      pack_choice[iarg] = &DumpCustom::pack_bmu;
+      vtype[iarg] = DOUBLE;
 
     } else if (strcmp(arg[iarg],"radius") == 0) {
       if (!atom->radius_flag)

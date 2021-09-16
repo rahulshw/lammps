@@ -55,7 +55,7 @@ FixBfield::FixBfield(LAMMPS *lmp, int narg, char **arg) :
     xstr = new char[n];
     strcpy(xstr,&arg[3][2]);
   } else {
-    B[0] = force->numeric(FLERR,arg[3]);
+    B[0] = utils::numeric(FLERR,arg[3], false, lmp);
     xstyle = CONSTANT;
   }
 
@@ -64,7 +64,7 @@ FixBfield::FixBfield(LAMMPS *lmp, int narg, char **arg) :
     ystr = new char[n];
     strcpy(ystr,&arg[4][2]);
   } else {
-    B[1] = force->numeric(FLERR,arg[4]);
+    B[1] = utils::numeric(FLERR,arg[4], false, lmp);
     ystyle = CONSTANT;
   }
 
@@ -73,7 +73,7 @@ FixBfield::FixBfield(LAMMPS *lmp, int narg, char **arg) :
     zstr = new char[n];
     strcpy(zstr,&arg[5][2]);
   } else {
-    B[2] = force->numeric(FLERR,arg[5]);
+    B[2] = utils::numeric(FLERR,arg[5], false, lmp);
     zstyle = CONSTANT;
   }
 
@@ -117,7 +117,6 @@ FixBfield::~FixBfield()
 int FixBfield::setmask()
 {
   int mask = 0;
-  mask |= THERMO_ENERGY;
   mask |= INITIAL_INTEGRATE;
   mask |= POST_INTEGRATE;
   mask |= POST_FORCE;

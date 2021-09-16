@@ -255,11 +255,11 @@ void Set::command(int narg, char **arg)
     } else if (strcmp(arg[iarg],"bdipole") == 0) {
       if (iarg+4 > narg) error->all(FLERR,"Illegal set command");
       if (strstr(arg[iarg+1],"v_") == arg[iarg+1]) varparse(arg[iarg+1],1);
-      else xvalue = force->numeric(FLERR,arg[iarg+1]);
+      else xvalue = utils::numeric(FLERR,arg[iarg+1],false,lmp);
       if (strstr(arg[iarg+2],"v_") == arg[iarg+2]) varparse(arg[iarg+2],2);
-      else yvalue = force->numeric(FLERR,arg[iarg+2]);
+      else yvalue = utils::numeric(FLERR,arg[iarg+2],false,lmp);
       if (strstr(arg[iarg+3],"v_") == arg[iarg+3]) varparse(arg[iarg+3],3);
-      else zvalue = force->numeric(FLERR,arg[iarg+3]);
+      else zvalue = utils::numeric(FLERR,arg[iarg+3],false,lmp);
       if (!atom->bmu_flag)
         error->all(FLERR,"Cannot set this attribute for this atom style");
       set(BDIPOLE);
@@ -280,8 +280,8 @@ void Set::command(int narg, char **arg)
 
     } else if (strcmp(arg[iarg],"bdipole/random") == 0) {
       if (iarg+3 > narg) error->all(FLERR,"Illegal set command");
-      ivalue = force->inumeric(FLERR,arg[iarg+1]);
-      dvalue = force->numeric(FLERR,arg[iarg+2]);
+      ivalue = utils::inumeric(FLERR,arg[iarg+1],false,lmp);
+      dvalue = utils::numeric(FLERR,arg[iarg+2],false,lmp);
       if (!atom->bmu_flag)
         error->all(FLERR,"Cannot set this attribute for this atom style");
       if (ivalue <= 0)
@@ -1222,10 +1222,10 @@ void Set::setrandom(int keyword)
     if (domain->dimension == 3) {
       for (i = 0; i < nlocal; i++)
         if (select[i]) {
-          random->reset(seed,x[i]);
-          bmu[i][0] = random->uniform() - 0.5;
-          bmu[i][1] = random->uniform() - 0.5;
-          bmu[i][2] = random->uniform() - 0.5;
+          ranpark->reset(seed,x[i]);
+          bmu[i][0] = ranpark->uniform() - 0.5;
+          bmu[i][1] = ranpark->uniform() - 0.5;
+          bmu[i][2] = ranpark->uniform() - 0.5;
           msq = bmu[i][0]*bmu[i][0] + bmu[i][1]*bmu[i][1] + bmu[i][2]*bmu[i][2];
           scale = dvalue/sqrt(msq);
           bmu[i][0] *= scale;
@@ -1238,9 +1238,9 @@ void Set::setrandom(int keyword)
     } else {
       for (i = 0; i < nlocal; i++)
         if (select[i]) {
-          random->reset(seed,x[i]);
-          bmu[i][0] = random->uniform() - 0.5;
-          bmu[i][1] = random->uniform() - 0.5;
+          ranpark->reset(seed,x[i]);
+          bmu[i][0] = ranpark->uniform() - 0.5;
+          bmu[i][1] = ranpark->uniform() - 0.5;
           bmu[i][2] = 0.0;
           msq = bmu[i][0]*bmu[i][0] + bmu[i][1]*bmu[i][1];
           scale = dvalue/sqrt(msq);

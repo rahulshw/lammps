@@ -1460,7 +1460,7 @@ void Input::dielectric()
 void Input::dimagnetic()
 {
   if (narg != 1) error->all(FLERR,"Illegal dimagnetic command");
-  force->dimagnetic = force->numeric(FLERR,arg[0]);
+  force->dimagnetic = utils::inumeric(FLERR,arg[0],false,lmp);
 }
 
 /* ---------------------------------------------------------------------- */
