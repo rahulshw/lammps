@@ -116,6 +116,7 @@ Atom::Atom(LAMMPS *lmp) : Pointers(lmp)
 
   q = nullptr;
   mu = nullptr;
+  bmu = nullptr;
 
   // finite-size particles
 
@@ -642,7 +643,7 @@ void Atom::set_atomflag_defaults()
   peri_flag = electron_flag = 0;
   wavepacket_flag = sph_flag = 0;
   molecule_flag = molindex_flag = molatom_flag = 0;
-  q_flag = mu_flag = 0;
+  q_flag = mu_flag = bmu_flag = 0;
   rmass_flag = radius_flag = omega_flag = torque_flag = angmom_flag = 0;
   vfrac_flag = spin_flag = eradius_flag = ervel_flag = erforce_flag = 0;
   cs_flag = csforce_flag = vforce_flag = ervelforce_flag = etag_flag = 0;
@@ -2707,6 +2708,7 @@ void *Atom::extract(const char *name)
   if (strcmp(name,"molecule") == 0) return (void *) molecule;
   if (strcmp(name,"q") == 0) return (void *) q;
   if (strcmp(name,"mu") == 0) return (void *) mu;
+  if (strcmp(name,"bmu") == 0) return (void *) bmu;
   if (strcmp(name,"omega") == 0) return (void *) omega;
   if (strcmp(name,"angmom") == 0) return (void *) angmom;
   if (strcmp(name,"torque") == 0) return (void *) torque;

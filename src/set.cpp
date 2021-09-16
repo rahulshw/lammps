@@ -46,7 +46,7 @@ enum{ATOM_SELECT,MOL_SELECT,TYPE_SELECT,GROUP_SELECT,REGION_SELECT};
 
 enum{TYPE,TYPE_FRACTION,TYPE_RATIO,TYPE_SUBSET,
      MOLECULE,X,Y,Z,VX,VY,VZ,CHARGE,MASS,SHAPE,LENGTH,TRI,
-     DIPOLE,DIPOLE_RANDOM,SPIN,SPIN_RANDOM,QUAT,QUAT_RANDOM,
+     DIPOLE,BDIPOLE,DIPOLE_RANDOM,BDIPOLE_RANDOM,SPIN,SPIN_RANDOM,QUAT,QUAT_RANDOM,
      THETA,THETA_RANDOM,ANGMOM,OMEGA,
      DIAMETER,DENSITY,VOLUME,IMAGE,BOND,ANGLE,DIHEDRAL,IMPROPER,
      SPH_E,SPH_CV,SPH_RHO,EDPD_TEMP,EDPD_CV,CC,SMD_MASS_DENSITY,
@@ -252,6 +252,19 @@ void Set::command(int narg, char **arg)
       set(DIPOLE);
       iarg += 4;
 
+    } else if (strcmp(arg[iarg],"bdipole") == 0) {
+      if (iarg+4 > narg) error->all(FLERR,"Illegal set command");
+      if (strstr(arg[iarg+1],"v_") == arg[iarg+1]) varparse(arg[iarg+1],1);
+      else xvalue = force->numeric(FLERR,arg[iarg+1]);
+      if (strstr(arg[iarg+2],"v_") == arg[iarg+2]) varparse(arg[iarg+2],2);
+      else yvalue = force->numeric(FLERR,arg[iarg+2]);
+      if (strstr(arg[iarg+3],"v_") == arg[iarg+3]) varparse(arg[iarg+3],3);
+      else zvalue = force->numeric(FLERR,arg[iarg+3]);
+      if (!atom->bmu_flag)
+        error->all(FLERR,"Cannot set this attribute for this atom style");
+      set(BDIPOLE);
+      iarg += 4;
+
     } else if (strcmp(arg[iarg],"dipole/random") == 0) {
       if (iarg+3 > narg) error->all(FLERR,"Illegal set command");
       ivalue = utils::inumeric(FLERR,arg[iarg+1],false,lmp);
@@ -263,6 +276,19 @@ void Set::command(int narg, char **arg)
       if (dvalue <= 0.0)
         error->all(FLERR,"Invalid dipole length in set command");
       setrandom(DIPOLE_RANDOM);
+      iarg += 3;
+
+    } else if (strcmp(arg[iarg],"bdipole/random") == 0) {
+      if (iarg+3 > narg) error->all(FLERR,"Illegal set command");
+      ivalue = force->inumeric(FLERR,arg[iarg+1]);
+      dvalue = force->numeric(FLERR,arg[iarg+2]);
+      if (!atom->bmu_flag)
+        error->all(FLERR,"Cannot set this attribute for this atom style");
+      if (ivalue <= 0)
+        error->all(FLERR,"Invalid random number seed in set command");
+      if (dvalue <= 0.0)
+        error->all(FLERR,"Invalid dipole length in set command");
+      setrandom(BDIPOLE_RANDOM);
       iarg += 3;
 
     } else if (strcmp(arg[iarg],"spin") == 0) {
@@ -937,6 +963,17 @@ void Set::set(int keyword)
       sp[i][3] = dvalue;
     }
 
+    // set magnetic dipole moment
+
+    else if (keyword == BDIPOLE) {
+      double **bmu = atom->bmu;
+      bmu[i][0] = xvalue;
+      bmu[i][1] = yvalue;
+      bmu[i][2] = zvalue;
+      bmu[i][3] = sqrt(bmu[i][0]*bmu[i][0] + bmu[i][1]*bmu[i][1] +
+                      bmu[i][2]*bmu[i][2]);
+    }
+
     // set quaternion orientation of ellipsoid or tri or body particle
     // set quaternion orientation of ellipsoid or tri or body particle
     // enforce quat rotation vector in z dir for 2d systems
@@ -1172,6 +1209,44 @@ void Set::setrandom(int keyword)
           mu[i][0] *= scale;
           mu[i][1] *= scale;
           mu[i][3] = dvalue;
+          count++;
+        }
+    }
+
+  } else if (keyword == BDIPOLE_RANDOM) {
+    double **bmu = atom->bmu;
+    int nlocal = atom->nlocal;
+
+    double msq,scale;
+
+    if (domain->dimension == 3) {
+      for (i = 0; i < nlocal; i++)
+        if (select[i]) {
+          random->reset(seed,x[i]);
+          bmu[i][0] = random->uniform() - 0.5;
+          bmu[i][1] = random->uniform() - 0.5;
+          bmu[i][2] = random->uniform() - 0.5;
+          msq = bmu[i][0]*bmu[i][0] + bmu[i][1]*bmu[i][1] + bmu[i][2]*bmu[i][2];
+          scale = dvalue/sqrt(msq);
+          bmu[i][0] *= scale;
+          bmu[i][1] *= scale;
+          bmu[i][2] *= scale;
+          bmu[i][3] = dvalue;
+          count++;
+        }
+
+    } else {
+      for (i = 0; i < nlocal; i++)
+        if (select[i]) {
+          random->reset(seed,x[i]);
+          bmu[i][0] = random->uniform() - 0.5;
+          bmu[i][1] = random->uniform() - 0.5;
+          bmu[i][2] = 0.0;
+          msq = bmu[i][0]*bmu[i][0] + bmu[i][1]*bmu[i][1];
+          scale = dvalue/sqrt(msq);
+          bmu[i][0] *= scale;
+          bmu[i][1] *= scale;
+          bmu[i][3] = dvalue;
           count++;
         }
     }

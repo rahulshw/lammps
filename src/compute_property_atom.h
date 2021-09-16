@@ -90,6 +90,10 @@ class ComputePropertyAtom : public Compute {
   void pack_fmy(int);
   void pack_fmz(int);
 
+  void pack_bmux(int);
+  void pack_bmuy(int);
+  void pack_bmuz(int);
+  void pack_bmu(int);
   void pack_radius(int);
   void pack_diameter(int);
   void pack_omegax(int);

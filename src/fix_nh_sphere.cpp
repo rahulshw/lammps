@@ -38,6 +38,8 @@ FixNHSphere::FixNHSphere(LAMMPS *lmp, int narg, char **arg) :
 {
   if (!atom->sphere_flag)
     error->all(FLERR,"Fix nvt/nph/npt sphere requires atom style sphere");
+  if (atom->mu_flag && atom->bmu_flag)
+    error->all(FLERR,"Fix nh/sphere updates either dipole attribute mu or bmu");
 
   // inertia = moment of inertia prefactor for sphere or disc
 
@@ -123,7 +125,12 @@ void FixNHSphere::nve_x()
   // update mu for dipoles
 
   if (dipole_flag) {
-    double **mu = atom->mu;
+
+    // mu is electric or magnetic dipole
+    double **mu;
+    if(atom->mu_flag) mu = atom->mu;
+    else mu = atom->bmu;
+
     double **omega = atom->omega;
     int *mask = atom->mask;
     int nlocal = atom->nlocal;

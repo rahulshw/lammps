@@ -49,7 +49,8 @@ Force::Force(LAMMPS *lmp) : Pointers(lmp)
   special_angle = special_dihedral = 0;
   special_extra = 0;
 
-  dielectric = 1.0;
+  dielectric = 1.0; //relative permittivity
+  dimagnetic = 1.0; //relative permeability
   qqr2e_lammps_real = 332.06371;          // these constants are toggled
   qqr2e_charmm_real = 332.0716;           // by new CHARMM pair styles
 
@@ -170,6 +171,7 @@ Force::~Force()
 void Force::init()
 {
   qqrd2e = qqr2e/dielectric;
+  ddrd2e = ddr2e/dimagnetic;
 
   // check if pair style must be specified after restart
   if (pair_restart) {
