@@ -53,7 +53,7 @@ void PairCoulCutSoft2::compute(int eflag, int vflag) {
     int *ilist,*jlist,*numneigh,**firstneigh;
 
     ecoul = 0.0;
-    ev_init(eflag,vflag);
+    ev_init(eflag, vflag);
 
     double **x = atom->x;
     double **f = atom->f;
@@ -121,7 +121,7 @@ void PairCoulCutSoft2::compute(int eflag, int vflag) {
                 if (eflag) {
                     ecoul = factor_coul * qqrd2e * scale[itype][jtype] * qtmp * q[j] * rinv;
                     if (alpha[itype][jtype] > 0.0) {
-                        ecoul -= exp_factor;
+                        ecoul *= (1 - exp_factor);
                     }
                 }
 
@@ -236,21 +236,30 @@ double PairCoulCutSoft2::init_one(int i, int j) {
 double PairCoulCutSoft2::single(int i, int j, int itype, int jtype,
                                 double rsq, double factor_coul, double factor_lj,
                                 double &fforce) {
-    double r2inv, rinv, forcecoul, phicoul;
+    double r2inv, rinv, forcecoul, phicoul, rsq_by_alphasq, exp_factor;
 
     r2inv = 1/rsq;
     rinv = sqrt(r2inv);
 
     forcecoul = force->qqrd2e * atom->q[i]*atom->q[j] * rinv;
 
+    if (alpha[itype][jtype] > 0.0){
+        rsq_by_alphasq = rsq/(alpha[itype][jtype]*alpha[itype][jtype]);
+        exp_factor = exp(-1*rsq_by_alphasq);
+        forcecoul -= force->qqrd2e * scale[itype][jtype] * atom->q[i]*atom->q[j]
+                     * (1+2*rsq_by_alphasq) * exp_factor * rinv;
+    }
+
 
     fforce = factor_coul * forcecoul * r2inv;
 
     phicoul = force->qqrd2e * atom->q[i]*atom->q[j]*rinv;
+    if (alpha[itype][jtype] > 0.0) {
+        phicoul *= (1 - exp_factor);
+    }
 
     return factor_coul*phicoul;
 }
-
 
 void PairCoulCutSoft2::write_data(FILE *fp) {
     for (int i = 1; i <= atom->ntypes; i++)
