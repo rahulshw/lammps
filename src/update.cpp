@@ -208,6 +208,7 @@ void Update::set_units(const char *style)
     force->mv2d = 1.0;
     force->nktv2p = 1.0;
     force->qqr2e = 8.9876e9;
+    force->mmr2e = 6.67e-11;
     force->qe2f = 1.0;
     force->vxmu2f = 1.0;
     force->xxt2kmu = 1.0;
@@ -231,6 +232,7 @@ void Update::set_units(const char *style)
     force->mv2d = 1.0;
     force->nktv2p = 1.0;
     force->qqr2e = 1.0;
+    force->mmr2e = 6.7e-8;
     force->qe2f = 1.0;
     force->vxmu2f = 1.0;
     force->xxt2kmu = 1.0;

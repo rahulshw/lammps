@@ -43,9 +43,10 @@ Force::Force(LAMMPS *lmp) : Pointers(lmp)
 {
   newton = newton_pair = newton_bond = 1;
 
-  special_lj[0] = special_coul[0] = 1.0;
+  special_lj[0] = special_coul[0] = special_grav[0] = 1.0;
   special_lj[1] = special_lj[2] = special_lj[3] = 0.0;
   special_coul[1] = special_coul[2] = special_coul[3] = 0.0;
+  special_grav[1] = special_grav[2] = special_grav[3] = 0.0;
   special_angle = special_dihedral = 0;
   special_extra = 0;
 
@@ -172,7 +173,7 @@ void Force::init()
 {
   qqrd2e = qqr2e/dielectric;
   ddrd2e = ddr2e/dimagnetic;
-
+  
   // check if pair style must be specified after restart
   if (pair_restart) {
     if (!pair)

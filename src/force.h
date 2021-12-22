@@ -49,6 +49,7 @@ class Force : protected Pointers {
   double mv2d;                       // conversion of mass/volume to density
   double nktv2p;                     // conversion of NkT/V to pressure
   double qqr2e;                      // conversion of q^2/r to energy
+  double mmr2e;                      // conversion of m^2/r to energy
   double ddr2e;                      // conversion of dipole^2/r^3 to energy for mag dipoles
   double qe2f;                       // conversion of qE to force
   double vxmu2f;                     // conversion of vx dynamic-visc to force
@@ -114,6 +115,7 @@ class Force : protected Pointers {
   // index [0] is not used in these arrays
   double special_lj[4];      // 1-2, 1-3, 1-4 prefactors for LJ
   double special_coul[4];    // 1-2, 1-3, 1-4 prefactors for Coulombics
+  double special_grav[4];    // 1-2, 1-3, 1-4 prefactors for gravitation
   int special_angle;         // 0 if defined angles are ignored
                              // 1 if only weight 1,3 atoms if in an angle
   int special_dihedral;      // 0 if defined dihedrals are ignored

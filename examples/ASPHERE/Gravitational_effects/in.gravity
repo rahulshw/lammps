@@ -1,0 +1,75 @@
+# Input script for gravitational attraction between particles
+variable Np             equal       2            # No. of particles (each species)
+variable md1            equal     1000
+variable md2            equal     1000
+variable lc             equal     0.03
+variable dt     	    equal      1e-3
+variable trx    	    equal     100*${dt}    	       # temp relax for nvt
+variable nt     	    equal     100000000               # total runsteps
+variable Nth            equal     100          	       # thermo steps
+variable itp            equal     200
+variable ftp            equal     200
+variable T              equal     200
+###################################################################################
+
+
+#Initialization
+
+units			si
+atom_style		atomic
+dimension		2
+boundary		p p p
+
+#######################################################################################
+
+#Atom definition
+
+region			simbox block  0  ${lc}  0  ${lc}   -1e-4  1e-4
+create_box      	2 simbox
+create_atoms         2 single 0.015 0.015 0.0
+create_atoms	     1 single 0.023  0.015  0.0
+group                   dust1 type 1
+group                   dust2 type 2 
+
+
+mass                    1*1 ${md1}
+mass                    2*2 ${md2}
+################################################################################
+
+#Force field
+pair_style              grav/cut 0.03		
+pair_coeff		           * *
+
+
+#####################################################################################
+
+# temperature controller
+
+compute			new3d all temp
+
+##########################################################################################
+
+# equilibrate
+
+velocity		all create ${T} 5812775 temp new3d units box
+fix			    eq1 all nvt temp ${itp} ${ftp} ${trx}
+
+fix             2dim all enforce2d
+
+timestep		${dt}
+
+#############################################################################
+
+#Outputs
+thermo_style		custom step temp pe ke etotal epair press 
+thermo			    ${Nth}
+thermo_modify		temp new3d
+
+dump            	dp1 all custom 50000 dump_nvt.lammpstrj id type x y vx vy
+#dump data_file all custom 1 output.lammpstrj id type x y vx vy
+#dump video_file all movie 1 output.mp4 type type adiam 0.05
+
+run			        ${nt}
+###########################################################################################
+
+
