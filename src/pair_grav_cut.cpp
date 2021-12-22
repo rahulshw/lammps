@@ -80,7 +80,7 @@ void PairGravCut::compute(int eflag, int vflag)
 
   for (ii = 0; ii < inum; ii++) {
     i = ilist[ii];
-    mtmp = mass[i];
+    mtmp = mass[i+1];
     xtmp = x[i][0];
     ytmp = x[i][1];
     ztmp = x[i][2];
@@ -102,7 +102,7 @@ void PairGravCut::compute(int eflag, int vflag)
       if (rsq < cutsq[itype][jtype]) {
         r2inv = 1.0/rsq;
         rinv = sqrt(r2inv);
-        forcegrav = mmr2e * scale[itype][jtype] * mtmp*mass[j]*rinv;
+        forcegrav = -1 * mmr2e * scale[itype][jtype] * mtmp*mass[j+1]*rinv;
         fpair = factor_grav*forcegrav * r2inv;
 
         f[i][0] += delx*fpair;
@@ -115,7 +115,7 @@ void PairGravCut::compute(int eflag, int vflag)
         }
 
         if (eflag)
-          egrav = factor_grav * mmr2e * scale[itype][jtype] * mtmp*mass[j]*rinv;
+          egrav = factor_grav * -1 * mmr2e * scale[itype][jtype] * mtmp*mass[j+1]*rinv;
 
         if (evflag) ev_tally(i,j,nlocal,newton_pair,
                              0.0,egrav,fpair,delx,dely,delz);
@@ -333,10 +333,10 @@ double PairGravCut::single(int i, int j, int /*itype*/, int /*jtype*/,
 
   r2inv = 1.0/rsq;
   rinv = sqrt(r2inv);
-  forcegrav = force->mmr2e * atom->mass[i]*atom->mass[j]*rinv;
+  forcegrav = -1 * force->mmr2e * atom->mass[i+1]*atom->mass[j+1]*rinv;
   fforce = factor_grav*forcegrav * r2inv;
 
-  phigrav = force->mmr2e * atom->mass[i]*atom->mass[j]*rinv;
+  phigrav = force->mmr2e * atom->mass[i+1]*atom->mass[j+1]*rinv;
   return factor_grav*phigrav;
 }
 
